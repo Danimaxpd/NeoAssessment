@@ -1,13 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CharactersService } from '../characters/characters.service';
 import { Character } from '../characters/entities/character.entity';
-import { BattleDto } from './dto/battle.dto';
-import {
-  BattleResult,
-  BattleRound,
-  BattleTurn,
-} from './interfaces/battle.interface';
 import { BattleResultDto } from './dto/battle-result.dto';
+import { BattleTurn, BattleRound } from './interfaces/battle.interface';
 
 @Injectable()
 export class BattlesService {
@@ -118,29 +113,75 @@ export class BattlesService {
     }
 
     const battleLog: string[] = [];
-    let currentHealth1 = character1.health;
-    let currentHealth2 = character2.health;
+    let currentHealth1 = character1.currentHp;
+    let currentHealth2 = character2.currentHp;
+
+    // Battle start log
+    battleLog.push(
+      `Battle between ${character1.name} (${character1.job}) - ${currentHealth1} HP and ${character2.name} (${character2.job}) - ${currentHealth2} HP begins!`,
+    );
 
     while (currentHealth1 > 0 && currentHealth2 > 0) {
-      // Character 1 attacks Character 2
-      const damage1 = Math.max(1, character1.attack - character2.defense);
-      currentHealth2 -= damage1;
+      // Determine first attacker based on speed
+      const speed1 = this.getRandomInt(character1.speedModifier);
+      const speed2 = this.getRandomInt(character2.speedModifier);
+
+      let firstAttacker: Character;
+      let secondAttacker: Character;
+      let firstSpeed: number;
+      let secondSpeed: number;
+
+      if (speed1 > speed2) {
+        firstAttacker = character1;
+        secondAttacker = character2;
+        firstSpeed = speed1;
+        secondSpeed = speed2;
+      } else {
+        firstAttacker = character2;
+        secondAttacker = character1;
+        firstSpeed = speed2;
+        secondSpeed = speed1;
+      }
+
       battleLog.push(
-        `${character1.name} attacks ${character2.name} for ${damage1} damage!`,
+        `${firstAttacker.name}'s speed (${firstSpeed}) was faster than ${secondAttacker.name}'s speed (${secondSpeed}) and will begin this round.`,
       );
 
-      if (currentHealth2 <= 0) break;
+      // First attacker's turn
+      const damage1 = this.getRandomInt(firstAttacker.attackModifier);
+      if (firstAttacker === character1) {
+        currentHealth2 = Math.max(0, currentHealth2 - damage1);
+      } else {
+        currentHealth1 = Math.max(0, currentHealth1 - damage1);
+      }
 
-      // Character 2 attacks Character 1
-      const damage2 = Math.max(1, character2.attack - character1.defense);
-      currentHealth1 -= damage2;
       battleLog.push(
-        `${character2.name} attacks ${character1.name} for ${damage2} damage!`,
+        `${firstAttacker.name} attacks ${secondAttacker.name} for ${damage1} damage, ${secondAttacker.name} has ${firstAttacker === character1 ? currentHealth2 : currentHealth1} HP remaining.`,
+      );
+
+      if (currentHealth1 <= 0 || currentHealth2 <= 0) break;
+
+      // Second attacker's turn
+      const damage2 = this.getRandomInt(secondAttacker.attackModifier);
+      if (secondAttacker === character1) {
+        currentHealth2 = Math.max(0, currentHealth2 - damage2);
+      } else {
+        currentHealth1 = Math.max(0, currentHealth1 - damage2);
+      }
+
+      battleLog.push(
+        `${secondAttacker.name} attacks ${firstAttacker.name} for ${damage2} damage, ${firstAttacker.name} has ${secondAttacker === character1 ? currentHealth2 : currentHealth1} HP remaining.`,
       );
     }
 
     const winner = currentHealth1 > 0 ? character1 : character2;
     const loser = currentHealth1 > 0 ? character2 : character1;
+
+    battleLog.push(
+      `${winner.name} wins the battle! ${winner.name} still has ${
+        winner === character1 ? currentHealth1 : currentHealth2
+      } HP remaining!`,
+    );
 
     return {
       winner,

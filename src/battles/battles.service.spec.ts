@@ -15,6 +15,13 @@ describe('BattlesService', () => {
 
     service = module.get<BattlesService>(BattlesService);
     charactersService = module.get<CharactersService>(CharactersService);
+
+    // Mock Math.random to return predictable values
+    jest.spyOn(Math, 'random').mockImplementation(() => 0.5);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should be defined', () => {
@@ -80,6 +87,9 @@ describe('BattlesService', () => {
     });
 
     it('should simulate a battle where character1 wins', () => {
+      // Mock Math.random to make character1 win
+      jest.spyOn(Math, 'random').mockImplementation(() => 0.9);
+
       const character1 = charactersService.create({
         name: 'Gandalf',
         job: Job.MAGE,
@@ -103,6 +113,9 @@ describe('BattlesService', () => {
     });
 
     it('should simulate a battle where character2 wins', () => {
+      // Mock Math.random to make character2 win
+      jest.spyOn(Math, 'random').mockImplementation(() => 0.1);
+
       const character1 = charactersService.create({
         name: 'Gandalf',
         job: Job.MAGE,
@@ -146,9 +159,30 @@ describe('BattlesService', () => {
 
       expect(result.battleLog).toBeDefined();
       expect(result.battleLog.length).toBeGreaterThan(0);
-      result.battleLog.forEach((log) => {
-        expect(log).toMatch(/^.* attacks .* for \d+ damage!$/);
-      });
+
+      // Check battle start message
+      expect(result.battleLog[0]).toMatch(
+        /^Battle between .* \(.*\) - \d+ HP and .* \(.*\) - \d+ HP begins!$/,
+      );
+
+      // Check speed comparison messages
+      for (let i = 1; i < result.battleLog.length - 1; i += 3) {
+        expect(result.battleLog[i]).toMatch(
+          /^.*'s speed \(\d+\) was faster than .*'s speed \(\d+\) and will begin this round\.$/,
+        );
+      }
+
+      // Check attack messages
+      for (let i = 2; i < result.battleLog.length - 1; i += 3) {
+        expect(result.battleLog[i]).toMatch(
+          /^.* attacks .* for \d+ damage, .* has \d+ HP remaining\.$/,
+        );
+      }
+
+      // Check battle end message
+      expect(result.battleLog[result.battleLog.length - 1]).toMatch(
+        /^.* wins the battle! .* still has \d+ HP remaining!$/,
+      );
     });
   });
 });
