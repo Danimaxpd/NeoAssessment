@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CharactersService } from '../characters/characters.service';
 import { Character } from '../characters/entities/character.entity';
 import { BattleResultDto } from './dto/battle-result.dto';
-import { BattleTurn } from './interfaces/battle.interface';
 
 @Injectable()
 export class BattlesService {
@@ -10,36 +9,6 @@ export class BattlesService {
 
   private getRandomInt(max: number): number {
     return Math.floor(Math.random() * (max + 1));
-  }
-
-  private determineFirstAttacker(
-    character1: Character,
-    character2: Character,
-  ): Character {
-    let speed1 = this.getRandomInt(character1.speedModifier);
-    let speed2 = this.getRandomInt(character2.speedModifier);
-
-    while (speed1 === speed2) {
-      speed1 = this.getRandomInt(character1.speedModifier);
-      speed2 = this.getRandomInt(character2.speedModifier);
-    }
-
-    return speed1 > speed2 ? character1 : character2;
-  }
-
-  private createBattleTurn(
-    attacker: Character,
-    defender: Character,
-  ): BattleTurn {
-    const damage = this.getRandomInt(attacker.attackModifier);
-    const remainingHp = Math.max(0, defender.currentHp - damage);
-
-    return {
-      attacker,
-      defender,
-      damage,
-      remainingHp,
-    };
   }
 
   /**

@@ -1,31 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Character } from '../../characters/entities/character.entity';
 
-export class BattleTurnDto {
-  @ApiProperty({ type: Character })
-  attacker: Character;
-
-  @ApiProperty({ type: Character })
-  defender: Character;
-
-  @ApiProperty()
-  damage: number;
-
-  @ApiProperty()
-  remainingHp: number;
-}
-
-export class BattleRoundDto {
-  @ApiProperty({ type: Character })
-  firstAttacker: Character;
-
-  @ApiProperty({ type: Character })
-  secondAttacker: Character;
-
-  @ApiProperty({ type: [BattleTurnDto] })
-  turns: BattleTurnDto[];
-}
-
 export class BattleResultDto {
   @ApiProperty({
     description: 'The winning character',
