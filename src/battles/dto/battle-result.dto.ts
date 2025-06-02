@@ -49,4 +49,4 @@ export class BattleResultDto {
     ],
   })
   battleLog: string[];
-} 
+}

@@ -2,12 +2,7 @@ import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
 import { BattlesService } from './battles.service';
 import { BattleDto } from './dto/battle.dto';
 import { BattleResultDto } from './dto/battle-result.dto';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('battles')
 @Controller('battles')

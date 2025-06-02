@@ -7,7 +7,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('RPG Character Management API')
-    .setDescription('API for managing characters in a role-playing game system. This backend service provides endpoints for character creation, management, and battle mechanics.')
+    .setDescription(
+      'API for managing characters in a role-playing game system. This backend service provides endpoints for character creation, management, and battle mechanics.',
+    )
     .setVersion('1.0')
     .addTag('characters', 'Character management endpoints')
     .addTag('battles', 'Battle system endpoints')
