@@ -1,24 +1,39 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
-    .setTitle('RPG Character Management API')
-    .setDescription(
-      'API for managing characters in a role-playing game system. This backend service provides endpoints for character creation, management, and battle mechanics.',
+    .setTitle(
+      configService.get<string>(
+        'SWAGGER_TITLE',
+        'RPG Character Management API',
+      ),
     )
-    .setVersion('1.0')
+    .setDescription(
+      configService.get<string>(
+        'SWAGGER_DESCRIPTION',
+        'API for managing characters in a role-playing game system. This backend service provides endpoints for character creation, management, and battle mechanics.',
+      ),
+    )
+    .setVersion(configService.get<string>('SWAGGER_VERSION', '1.0'))
     .addTag('characters', 'Character management endpoints')
     .addTag('battles', 'Battle system endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup(
+    configService.get<string>('SWAGGER_PATH', 'api-docs'),
+    app,
+    document,
+  );
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = configService.get<number>('PORT', 3000);
+  await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
