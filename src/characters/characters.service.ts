@@ -1,4 +1,72 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { Character, Job } from './entities/character.entity';
+import { CreateCharacterDto } from './dto/create-character.dto';
+import { UpdateCharacterDto } from './dto/update-character.dto';
 
 @Injectable()
-export class CharactersService {}
+export class CharactersService {
+  private characters: Map<string, Character> = new Map();
+
+  create(createCharacterDto: CreateCharacterDto): Character {
+    const id = uuidv4();
+    const initialStats = Character.getInitialStats(createCharacterDto.job);
+
+    const character = new Character({
+      id,
+      name: createCharacterDto.name,
+      job: createCharacterDto.job,
+      ...initialStats,
+      currentHp: initialStats.health,
+    });
+
+    character.attackModifier = character.calculateAttackModifier();
+    character.speedModifier = character.calculateSpeedModifier();
+
+    this.characters.set(id, character);
+    return character;
+  }
+
+  findAll(): Character[] {
+    return Array.from(this.characters.values());
+  }
+
+  findOne(id: string): Character {
+    const character = this.characters.get(id);
+    if (!character) {
+      throw new NotFoundException(`Character with ID ${id} not found`);
+    }
+    return character;
+  }
+
+  update(id: string, updateCharacterDto: UpdateCharacterDto): Character {
+    const character = this.findOne(id);
+
+    if ('name' in updateCharacterDto) {
+      character.name = updateCharacterDto.name as string;
+    }
+
+    if ('job' in updateCharacterDto) {
+      character.job = updateCharacterDto.job as Job;
+      const newStats = Character.getInitialStats(updateCharacterDto.job as Job);
+      Object.assign(character, newStats);
+      character.currentHp = newStats.health ?? 0;
+      character.attackModifier = character.calculateAttackModifier();
+      character.speedModifier = character.calculateSpeedModifier();
+    }
+
+    if ('currentHp' in updateCharacterDto) {
+      character.currentHp = updateCharacterDto.currentHp as number;
+    }
+
+    this.characters.set(id, character);
+    return character;
+  }
+
+  remove(id: string): void {
+    if (!this.characters.has(id)) {
+      throw new NotFoundException(`Character with ID ${id} not found`);
+    }
+    this.characters.delete(id);
+  }
+}
