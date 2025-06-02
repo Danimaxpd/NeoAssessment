@@ -16,8 +16,13 @@ export class CharactersService {
       id,
       name: createCharacterDto.name,
       job: createCharacterDto.job,
-      ...initialStats,
-      currentHp: initialStats.health,
+      health: createCharacterDto.health,
+      attack: createCharacterDto.attack,
+      defense: createCharacterDto.defense,
+      strength: initialStats.strength,
+      dexterity: initialStats.dexterity,
+      intelligence: initialStats.intelligence,
+      currentHp: createCharacterDto.health,
     });
 
     character.attackModifier = character.calculateAttackModifier();
