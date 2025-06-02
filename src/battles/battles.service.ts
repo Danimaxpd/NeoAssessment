@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CharactersService } from '../characters/characters.service';
 import { Character } from '../characters/entities/character.entity';
 import { BattleResultDto } from './dto/battle-result.dto';
-import { BattleTurn, BattleRound } from './interfaces/battle.interface';
+import { BattleTurn } from './interfaces/battle.interface';
 
 @Injectable()
 export class BattlesService {
@@ -42,68 +42,12 @@ export class BattlesService {
     };
   }
 
-  private createBattleRound(
-    character1: Character,
-    character2: Character,
-  ): BattleRound {
-    const firstAttacker = this.determineFirstAttacker(character1, character2);
-    const secondAttacker =
-      firstAttacker === character1 ? character2 : character1;
-
-    const turns: BattleTurn[] = [];
-
-    // First attacker's turn
-    const firstTurn = this.createBattleTurn(firstAttacker, secondAttacker);
-    turns.push(firstTurn);
-
-    // If second attacker is still alive, they get their turn
-    if (firstTurn.remainingHp > 0) {
-      const secondTurn = this.createBattleTurn(secondAttacker, firstAttacker);
-      turns.push(secondTurn);
-    }
-
-    return {
-      firstAttacker,
-      secondAttacker,
-      turns,
-    };
-  }
-
-  private generateBattleLog(rounds: BattleRound[]): string[] {
-    const log: string[] = [];
-
-    rounds.forEach((round, index) => {
-      const { firstAttacker, secondAttacker, turns } = round;
-
-      // Round start log
-      log.push(
-        `Round ${index + 1}: ${firstAttacker.name} (${firstAttacker.job}) - ${firstAttacker.currentHp} HP and ${secondAttacker.name} (${secondAttacker.job}) - ${secondAttacker.currentHp} HP`,
-      );
-      log.push(
-        `${firstAttacker.name}'s speed (${firstAttacker.speedModifier}) was faster than ${secondAttacker.name}'s speed (${secondAttacker.speedModifier}) and will begin this round.`,
-      );
-
-      // Turn logs
-      turns.forEach((turn) => {
-        const { attacker, defender, damage, remainingHp } = turn;
-        log.push(
-          `${attacker.name} attacks ${defender.name} for ${damage} damage, ${defender.name} has ${remainingHp} HP remaining.`,
-        );
-      });
-    });
-
-    return log;
-  }
-
-  private createBattleCharacter(
-    character: Character,
-    currentHp: number,
-  ): Character {
-    const battleCharacter = new Character(character);
-    battleCharacter.currentHp = currentHp;
-    return battleCharacter;
-  }
-
+  /**
+   * Simulates a battle between two characters.
+   * @param character1Id - The ID of the first character.
+   * @param character2Id - The ID of the second character.
+   * @returns A BattleResultDto object containing the result of the battle.
+   */
   simulateBattle(character1Id: string, character2Id: string): BattleResultDto {
     const character1 = this.charactersService.findOne(character1Id);
     const character2 = this.charactersService.findOne(character2Id);
