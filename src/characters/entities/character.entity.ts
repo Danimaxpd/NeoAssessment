@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BadRequestException } from '@nestjs/common';
 
 export enum Job {
   WARRIOR = 'Warrior',
@@ -123,7 +124,11 @@ export class Character {
           intelligence: 10,
         };
       default:
-        throw new Error('Invalid job');
+        throw new BadRequestException(
+          `Invalid job, try again with a valid job: ${Object.values(Job).join(
+            ', ',
+          )}`,
+        );
     }
   }
 }

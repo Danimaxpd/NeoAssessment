@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Character, Job } from './entities/character.entity';
@@ -11,6 +12,7 @@ import { UpdateCharacterDto } from './dto/update-character.dto';
 @Injectable()
 export class CharactersService {
   private characters: Map<string, Character> = new Map();
+  private readonly logger = new Logger(CharactersService.name);
 
   create(createCharacterDto: CreateCharacterDto): Character {
     // Check for existing character with same name
@@ -53,6 +55,7 @@ export class CharactersService {
 
   findOne(id: string): Character {
     const character = this.characters.get(id);
+    this.logger.debug(`Finding character with ID: ${id}`);
     if (!character) {
       throw new NotFoundException(`Character with ID ${id} not found`);
     }
@@ -60,6 +63,7 @@ export class CharactersService {
   }
 
   update(id: string, updateCharacterDto: UpdateCharacterDto): Character {
+    this.logger.debug(`Updating character with ID: ${id}`);
     const character = this.findOne(id);
 
     if ('name' in updateCharacterDto) {
@@ -78,8 +82,14 @@ export class CharactersService {
     if ('currentHp' in updateCharacterDto) {
       character.currentHp = updateCharacterDto.currentHp as number;
     }
-
+    this.logger.debug(
+      `Updating characters ${JSON.stringify(Array.from(this.characters.values()))}`,
+    );
     this.characters.set(id, character);
+    this.logger.debug(
+      `Updated characters ${JSON.stringify(Array.from(this.characters.values()))}`,
+    );
+    this.logger.debug(`Updated character ${JSON.stringify(character)}`);
     return character;
   }
 
