@@ -33,9 +33,6 @@ describe('BattlesService', () => {
       const character2 = charactersService.create({
         name: 'Aragorn',
         job: Job.WARRIOR,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       expect(() =>
@@ -47,9 +44,6 @@ describe('BattlesService', () => {
       const character1 = charactersService.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       expect(() =>
@@ -61,17 +55,11 @@ describe('BattlesService', () => {
       const character1 = charactersService.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const character2 = charactersService.create({
         name: 'Aragorn',
         job: Job.WARRIOR,
-        health: 120,
-        attack: 20,
-        defense: 15,
       });
 
       const result = service.simulateBattle(character1.id, character2.id);
@@ -92,18 +80,12 @@ describe('BattlesService', () => {
 
       const character1 = charactersService.create({
         name: 'Gandalf',
-        job: Job.MAGE,
-        health: 100,
-        attack: 20,
-        defense: 15,
+        job: Job.WARRIOR, // Using Warrior for higher stats
       });
 
       const character2 = charactersService.create({
         name: 'Aragorn',
-        job: Job.WARRIOR,
-        health: 50,
-        attack: 10,
-        defense: 5,
+        job: Job.MAGE, // Using Mage for lower stats
       });
 
       const result = service.simulateBattle(character1.id, character2.id);
@@ -118,18 +100,12 @@ describe('BattlesService', () => {
 
       const character1 = charactersService.create({
         name: 'Gandalf',
-        job: Job.MAGE,
-        health: 50,
-        attack: 10,
-        defense: 5,
+        job: Job.MAGE, // Using Mage for lower stats
       });
 
       const character2 = charactersService.create({
         name: 'Aragorn',
-        job: Job.WARRIOR,
-        health: 100,
-        attack: 20,
-        defense: 15,
+        job: Job.WARRIOR, // Using Warrior for higher stats
       });
 
       const result = service.simulateBattle(character1.id, character2.id);
@@ -142,17 +118,11 @@ describe('BattlesService', () => {
       const character1 = charactersService.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const character2 = charactersService.create({
         name: 'Aragorn',
         job: Job.WARRIOR,
-        health: 120,
-        attack: 20,
-        defense: 15,
       });
 
       const result = service.simulateBattle(character1.id, character2.id);

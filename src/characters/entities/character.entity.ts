@@ -98,6 +98,8 @@ export class Character {
       case Job.WARRIOR:
         return {
           health: 20,
+          attack: 15,
+          defense: 10,
           strength: 10,
           dexterity: 5,
           intelligence: 5,
@@ -105,6 +107,8 @@ export class Character {
       case Job.THIEF:
         return {
           health: 15,
+          attack: 12,
+          defense: 8,
           strength: 4,
           dexterity: 10,
           intelligence: 4,
@@ -112,6 +116,8 @@ export class Character {
       case Job.MAGE:
         return {
           health: 12,
+          attack: 10,
+          defense: 6,
           strength: 5,
           dexterity: 6,
           intelligence: 10,

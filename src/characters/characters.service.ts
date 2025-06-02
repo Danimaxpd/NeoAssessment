@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Character, Job } from './entities/character.entity';
 import { CreateCharacterDto } from './dto/create-character.dto';
@@ -9,6 +13,17 @@ export class CharactersService {
   private characters: Map<string, Character> = new Map();
 
   create(createCharacterDto: CreateCharacterDto): Character {
+    // Check for existing character with same name
+    const existingCharacter = Array.from(this.characters.values()).find(
+      (char) => char.name === createCharacterDto.name,
+    );
+
+    if (existingCharacter) {
+      throw new ConflictException(
+        `A character with name "${createCharacterDto.name}" already exists`,
+      );
+    }
+
     const id = uuidv4();
     const initialStats = Character.getInitialStats(createCharacterDto.job);
 
@@ -16,13 +31,13 @@ export class CharactersService {
       id,
       name: createCharacterDto.name,
       job: createCharacterDto.job,
-      health: createCharacterDto.health,
-      attack: createCharacterDto.attack,
-      defense: createCharacterDto.defense,
+      health: initialStats.health,
+      attack: initialStats.attack,
+      defense: initialStats.defense,
       strength: initialStats.strength,
       dexterity: initialStats.dexterity,
       intelligence: initialStats.intelligence,
-      currentHp: createCharacterDto.health,
+      currentHp: initialStats.health,
     });
 
     character.attackModifier = character.calculateAttackModifier();

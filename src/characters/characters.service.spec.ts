@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CharactersService } from './characters.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { Job } from './entities/character.entity';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 
 describe('CharactersService', () => {
   let service: CharactersService;
@@ -24,9 +24,6 @@ describe('CharactersService', () => {
       const createCharacterDto: CreateCharacterDto = {
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       };
 
       const character = service.create(createCharacterDto);
@@ -35,10 +32,53 @@ describe('CharactersService', () => {
       expect(character.id).toBeDefined();
       expect(character.name).toBe(createCharacterDto.name);
       expect(character.job).toBe(createCharacterDto.job);
-      expect(character.health).toBe(createCharacterDto.health);
-      expect(character.attack).toBe(createCharacterDto.attack);
-      expect(character.defense).toBe(createCharacterDto.defense);
-      expect(character.currentHp).toBe(createCharacterDto.health);
+      expect(character.health).toBe(12); // MAGE initial health
+      expect(character.attack).toBe(10); // MAGE initial attack
+      expect(character.defense).toBe(6); // MAGE initial defense
+      expect(character.currentHp).toBe(12); // MAGE initial health
+    });
+
+    it('should throw ConflictException when creating character with duplicate name', () => {
+      const createCharacterDto: CreateCharacterDto = {
+        name: 'Gandalf',
+        job: Job.MAGE,
+      };
+
+      service.create(createCharacterDto);
+
+      expect(() => service.create(createCharacterDto)).toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should throw ConflictException when creating character with same name but different job', () => {
+      service.create({
+        name: 'Gandalf',
+        job: Job.MAGE,
+      });
+
+      expect(() =>
+        service.create({
+          name: 'Gandalf',
+          job: Job.WARRIOR,
+        }),
+      ).toThrow(ConflictException);
+    });
+
+    it('should allow creating characters with same job but different names', () => {
+      const character1 = service.create({
+        name: 'Gandalf',
+        job: Job.MAGE,
+      });
+
+      const character2 = service.create({
+        name: 'Merlin',
+        job: Job.MAGE,
+      });
+
+      expect(character1.name).not.toBe(character2.name);
+      expect(character1.job).toBe(character2.job);
+      expect(character1.health).toBe(character2.health); // Both MAGE
     });
   });
 
@@ -51,17 +91,11 @@ describe('CharactersService', () => {
       const character1 = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const character2 = service.create({
         name: 'Aragorn',
         job: Job.WARRIOR,
-        health: 120,
-        attack: 20,
-        defense: 15,
       });
 
       const characters = service.findAll();
@@ -82,9 +116,6 @@ describe('CharactersService', () => {
       const character = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const found = service.findOne(character.id);
@@ -103,9 +134,6 @@ describe('CharactersService', () => {
       const character = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const updated = service.update(character.id, {
@@ -118,9 +146,6 @@ describe('CharactersService', () => {
       const character = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const updated = service.update(character.id, { job: Job.WARRIOR });
@@ -133,9 +158,6 @@ describe('CharactersService', () => {
       const character = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       const updated = service.update(character.id, { currentHp: 50 });
@@ -154,9 +176,6 @@ describe('CharactersService', () => {
       const character = service.create({
         name: 'Gandalf',
         job: Job.MAGE,
-        health: 100,
-        attack: 15,
-        defense: 10,
       });
 
       service.remove(character.id);
