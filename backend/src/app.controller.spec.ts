@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "OK"', () => {
-      expect(appController.healthCheck()).toBe('OK');
+    it('should return "Service is healthy"', () => {
+      expect(appController.healthCheck()).toBe('Service is healthy');
     });
   });
 });
