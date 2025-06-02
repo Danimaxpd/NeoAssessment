@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export enum Job {
   WARRIOR = 'Warrior',
   THIEF = 'Thief',
@@ -5,15 +7,58 @@ export enum Job {
 }
 
 export class Character {
+  @ApiProperty({
+    description: 'The unique identifier of the character',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   id: string;
+
+  @ApiProperty({
+    description: 'The name of the character',
+    example: 'Gandalf',
+  })
   name: string;
+
+  @ApiProperty({ enum: Job, description: 'Character class/job' })
   job: Job;
+
+  @ApiProperty({
+    description: 'The health points of the character',
+    example: 100,
+    minimum: 0,
+  })
   health: number;
+
+  @ApiProperty({
+    description: 'The attack power of the character',
+    example: 15,
+    minimum: 1,
+  })
+  attack: number;
+
+  @ApiProperty({
+    description: 'The defense power of the character',
+    example: 10,
+    minimum: 0,
+  })
+  defense: number;
+
+  @ApiProperty({ description: 'Strength attribute' })
   strength: number;
+
+  @ApiProperty({ description: 'Dexterity attribute' })
   dexterity: number;
+
+  @ApiProperty({ description: 'Intelligence attribute' })
   intelligence: number;
+
+  @ApiProperty({ description: 'Attack modifier based on attributes and job' })
   attackModifier: number;
+
+  @ApiProperty({ description: 'Speed modifier based on attributes and job' })
   speedModifier: number;
+
+  @ApiProperty({ description: 'Current health points' })
   currentHp: number;
 
   constructor(partial: Partial<Character>) {

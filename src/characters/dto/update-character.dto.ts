@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { IsNumber, Min } from 'class-validator';
 import { CreateCharacterDto } from './create-character.dto';
 

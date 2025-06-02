@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CharactersService } from '../characters/characters.service';
 import { Character } from '../characters/entities/character.entity';
 import { BattleDto } from './dto/battle.dto';
@@ -7,6 +7,7 @@ import {
   BattleRound,
   BattleTurn,
 } from './interfaces/battle.interface';
+import { BattleResultDto } from './dto/battle-result.dto';
 
 @Injectable()
 export class BattlesService {
@@ -108,48 +109,43 @@ export class BattlesService {
     return battleCharacter;
   }
 
-  battle(battleDto: BattleDto): BattleResult {
-    const character1 = this.charactersService.findOne(battleDto.character1Id);
-    const character2 = this.charactersService.findOne(battleDto.character2Id);
+  simulateBattle(character1Id: string, character2Id: string): BattleResultDto {
+    const character1 = this.charactersService.findOne(character1Id);
+    const character2 = this.charactersService.findOne(character2Id);
 
-    const rounds: BattleRound[] = [];
-    let currentHp1 = character1.currentHp;
-    let currentHp2 = character2.currentHp;
-
-    while (currentHp1 > 0 && currentHp2 > 0) {
-      const round = this.createBattleRound(
-        this.createBattleCharacter(character1, currentHp1),
-        this.createBattleCharacter(character2, currentHp2),
-      );
-
-      rounds.push(round);
-
-      // Update HP based on the last turn of the round
-      const lastTurn = round.turns[round.turns.length - 1];
-      if (lastTurn.defender === character1) {
-        currentHp1 = lastTurn.remainingHp;
-      } else {
-        currentHp2 = lastTurn.remainingHp;
-      }
+    if (!character1 || !character2) {
+      throw new NotFoundException('One or both characters not found');
     }
 
-    const winner = currentHp1 > 0 ? character1 : character2;
-    const loser = currentHp1 > 0 ? character2 : character1;
+    const battleLog: string[] = [];
+    let currentHealth1 = character1.health;
+    let currentHealth2 = character2.health;
 
-    // Update characters' HP in the database
-    this.charactersService.update(character1.id, { currentHp: currentHp1 });
-    this.charactersService.update(character2.id, { currentHp: currentHp2 });
+    while (currentHealth1 > 0 && currentHealth2 > 0) {
+      // Character 1 attacks Character 2
+      const damage1 = Math.max(1, character1.attack - character2.defense);
+      currentHealth2 -= damage1;
+      battleLog.push(
+        `${character1.name} attacks ${character2.name} for ${damage1} damage!`,
+      );
 
-    const log = this.generateBattleLog(rounds);
-    log.push(
-      `${winner.name} wins the battle! ${winner.name} still has ${winner.currentHp} HP remaining!`,
-    );
+      if (currentHealth2 <= 0) break;
+
+      // Character 2 attacks Character 1
+      const damage2 = Math.max(1, character2.attack - character1.defense);
+      currentHealth1 -= damage2;
+      battleLog.push(
+        `${character2.name} attacks ${character1.name} for ${damage2} damage!`,
+      );
+    }
+
+    const winner = currentHealth1 > 0 ? character1 : character2;
+    const loser = currentHealth1 > 0 ? character2 : character1;
 
     return {
       winner,
       loser,
-      rounds,
-      log,
+      battleLog,
     };
   }
 }
