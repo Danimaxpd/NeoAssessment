@@ -5,7 +5,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { Character, Job } from './entities/character.entity';
+import { Character } from './entities/character.entity';
+import { Job } from '@common/enums/job.enum';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
 

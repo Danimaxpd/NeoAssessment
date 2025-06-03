@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Job } from '../entities/character.entity';
+import { Job } from '@common/enums/job.enum';
 
 export class CreateCharacterDto {
   @ApiProperty({

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CharactersService } from './characters.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
-import { Job } from './entities/character.entity';
 import { NotFoundException, ConflictException } from '@nestjs/common';
+import { Job } from '@common/enums/job.enum';
 
 describe('CharactersService', () => {
   let service: CharactersService;

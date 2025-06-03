@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BadRequestException } from '@nestjs/common';
-
-export enum Job {
-  WARRIOR = 'Warrior',
-  THIEF = 'Thief',
-  MAGE = 'Mage',
-}
+import { Job } from '@common/enums/job.enum';
 
 export class Character {
   @ApiProperty({
