@@ -7,6 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // Enable CORS
+  app.enableCors({
+    origin: configService.get<string>('FRONTEND_URL', 'http://localhost:5173'),
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  });
+
   const config = new DocumentBuilder()
     .setTitle(
       configService.get<string>(
