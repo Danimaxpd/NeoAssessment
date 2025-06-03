@@ -15,9 +15,10 @@ import {
     MenuList,
     MenuItem,
     Checkbox,
+    useToast,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, HamburgerIcon } from '@chakra-ui/icons';
-import type { Character } from '../services/api';
+import type { Character, ApiError } from '../services/api';
 import { apiService } from '../services/api';
 import CharacterModal from './CharacterModal';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +29,9 @@ export default function CharacterList() {
     const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const toast = useToast();
 
     useEffect(() => {
         fetchCharacters();
@@ -36,10 +39,20 @@ export default function CharacterList() {
 
     const fetchCharacters = async () => {
         try {
+            setIsLoading(true);
             const data = await apiService.getAllCharacters();
             setCharacters(data);
         } catch (error) {
-            console.error('Error fetching characters:', error);
+            const apiError = error as ApiError;
+            toast({
+                title: 'Error',
+                description: apiError.message || 'Failed to fetch characters',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -71,8 +84,22 @@ export default function CharacterList() {
             await apiService.deleteCharacter(characterId);
             setCharacters(prev => prev.filter(c => c.id !== characterId));
             setSelectedCharacters(prev => prev.filter(c => c.id !== characterId));
+            toast({
+                title: 'Success',
+                description: 'Character deleted successfully',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
         } catch (error) {
-            console.error('Error deleting character:', error);
+            const apiError = error as ApiError;
+            toast({
+                title: 'Error',
+                description: apiError.message || 'Failed to delete character',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
@@ -87,6 +114,14 @@ export default function CharacterList() {
         setCharacters(prev => [...prev, newCharacter]);
         setIsCreateOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <Center minH="60vh">
+                <Text>Loading characters...</Text>
+            </Center>
+        );
+    }
 
     if (characters.length === 0) {
         return (
@@ -162,7 +197,7 @@ export default function CharacterList() {
                 {characters.map((character) => (
                     <Box key={character.id}>
                         <Card
-                            minW="200px"
+                            minW="260px"
                             maxW="240px"
                             p={2}
                             borderRadius="lg"
@@ -213,10 +248,12 @@ export default function CharacterList() {
                                         {character.name}
                                     </Text>
                                     <Badge
-                                        fontWeight="bold"
+                                        colorScheme={character.currentHp > 0 ? 'green' : 'red'}
                                         px={2}
-                                        py={0.5}
+                                        py={1}
                                         borderRadius="md"
+                                        fontSize="sm"
+                                        fontWeight="bold"
                                     >
                                         {character.currentHp > 0 ? 'ALIVE' : 'DEAD'}
                                     </Badge>
