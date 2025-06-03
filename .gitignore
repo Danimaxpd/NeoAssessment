@@ -1,0 +1,7 @@
+# Ignore all files in the .env file
+.env
+# Ignore bundle files
+bundle.zip
+bundle
+bundle*
+*.bundle
