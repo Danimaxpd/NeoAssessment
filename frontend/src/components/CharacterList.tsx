@@ -16,12 +16,15 @@ import {
     MenuItem,
     Checkbox,
     useToast,
+    HStack,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, HamburgerIcon } from '@chakra-ui/icons';
 import type { Character, ApiError } from '../services/api';
 import { apiService } from '../services/api';
 import CharacterModal from './CharacterModal';
 import { useNavigate } from 'react-router-dom';
+import { FaHeart } from 'react-icons/fa';
+import { GiBroadsword, GiShield, GiMuscleUp, GiRunningShoe, GiBrain } from 'react-icons/gi';
 
 export default function CharacterList() {
     const [characters, setCharacters] = useState<Character[]>([]);
@@ -115,6 +118,8 @@ export default function CharacterList() {
         setIsCreateOpen(false);
     };
 
+    const canStartBattle = selectedCharacters.length === 2 && selectedCharacters.every(c => c.currentHp > 0);
+
     if (isLoading) {
         return (
             <Center minH="60vh">
@@ -150,6 +155,27 @@ export default function CharacterList() {
 
     return (
         <Box w="full">
+            {/* Comparison Panel */}
+            {selectedCharacters.length === 2 && (
+                <Card mb={6} p={4} boxShadow="md" borderRadius="lg">
+                    <Stack direction={{ base: 'column', md: 'row' }} spacing={6} align="center" justify="center">
+                        {selectedCharacters.map((char) => (
+                            <Box key={char.id} minW="200px" textAlign="center">
+                                <Text fontSize="xl" fontWeight="bold" mb={2}>{char.name}</Text>
+                                <Text fontSize="md" color="gray.600">{char.job}</Text>
+                                <Stack spacing={2} mt={2} fontSize="sm" align="start">
+                                    <HStack><FaHeart color="#E53E3E" /><Text>HP: {char.currentHp} / {char.health}</Text></HStack>
+                                    <HStack><GiBroadsword color="#3182CE" /><Text>Attack: {char.attack}</Text></HStack>
+                                    <HStack><GiShield color="#718096" /><Text>Defense: {char.defense}</Text></HStack>
+                                    <HStack><GiMuscleUp color="#ECC94B" /><Text>Strength: {char.strength}</Text></HStack>
+                                    <HStack><GiRunningShoe color="#38A169" /><Text>Dexterity: {char.dexterity}</Text></HStack>
+                                    <HStack><GiBrain color="#805AD5" /><Text>Intelligence: {char.intelligence}</Text></HStack>
+                                </Stack>
+                            </Box>
+                        ))}
+                    </Stack>
+                </Card>
+            )}
             <Stack spacing={6} align="stretch" pb={4}>
                 <Flex justify="space-between" wrap="wrap" gap={2}>
                     <Text fontSize="2xl" fontWeight="bold">
@@ -171,7 +197,7 @@ export default function CharacterList() {
                             Create Character
                         </Button>
                         <Button
-                            disabled={selectedCharacters.length !== 2}
+                            disabled={!canStartBattle}
                             onClick={handleStartBattle}
                             bg="battle.500"
                             color="white"
@@ -257,7 +283,6 @@ export default function CharacterList() {
                                     >
                                         {character.currentHp > 0 ? 'ALIVE' : 'DEAD'}
                                     </Badge>
-                                    <Text>{character.job}</Text>
                                     <Text>HP: {character.currentHp}/{character.health}</Text>
                                 </Stack>
                             </CardBody>

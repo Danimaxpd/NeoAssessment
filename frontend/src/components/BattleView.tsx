@@ -91,24 +91,46 @@ export default function BattleView() {
                                 <Text fontSize="lg" fontWeight="bold">
                                     {battleResult.winner.name}
                                 </Text>
-                                <Badge colorScheme="green" fontSize="sm" borderRadius="md" px={2}>
-                                    Winner
-                                </Badge>
-                                <Text fontSize="sm" color="gray.400">
-                                    HP: {battleResult.winner.currentHp}
+                                <Text fontSize="sm" color="gray.500">
+                                    {battleResult.winner.job}
                                 </Text>
+                                {isTyping ? (
+                                    <Text fontSize="sm" color="gray.400">
+                                        HP: {battleResult.winner.health}
+                                    </Text>
+                                ) : (
+                                    <>
+                                        <Badge colorScheme="green" fontSize="sm" borderRadius="md" px={2}>
+                                            Winner
+                                        </Badge>
+                                        <Text fontSize="sm" color="gray.400">
+                                            HP: {battleResult.winner.currentHp}
+                                        </Text>
+                                    </>
+                                )}
                             </Box>
                             <Spacer />
                             <Box textAlign="center">
                                 <Text fontSize="lg" fontWeight="bold">
                                     {battleResult.loser.name}
                                 </Text>
-                                <Badge colorScheme="red" fontSize="sm" borderRadius="md" px={2}>
-                                    Loser
-                                </Badge>
-                                <Text fontSize="sm" color="gray.400">
-                                    HP: {battleResult.loser.currentHp}
+                                <Text fontSize="sm" color="gray.500">
+                                    {battleResult.loser.job}
                                 </Text>
+                                {isTyping ? (
+                                    <Text fontSize="sm" color="gray.400">
+                                        HP: {battleResult.loser.health}
+                                    </Text>
+                                ) : (
+                                    <>
+                                        <Badge colorScheme="red" fontSize="sm" borderRadius="md" px={2}>
+                                            Loser
+                                        </Badge>
+                                        <Text fontSize="sm" color="gray.400">
+                                            HP: {battleResult.loser.currentHp}
+                                        </Text>
+                                    </>
+                                )}
                             </Box>
                         </Flex>
                     </CardBody>

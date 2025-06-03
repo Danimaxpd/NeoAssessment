@@ -18,7 +18,13 @@ import {
     FormLabel,
     Select,
     useToast,
+    HStack,
+    Flex,
+    Box,
+    SimpleGrid,
 } from '@chakra-ui/react';
+import { FaHeart } from 'react-icons/fa';
+import { GiBroadsword, GiShield, GiMuscleUp, GiRunningShoe, GiBrain } from 'react-icons/gi';
 
 interface CharacterModalProps {
     character?: Character;
@@ -82,26 +88,30 @@ export default function CharacterModal({ character, isOpen, onClose, onSuccess, 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{character.name}</ModalHeader>
+                    <ModalHeader>Character Name: {character.name}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Stack spacing={4} align="start" pb={4}>
-                            <Badge
-                                colorScheme={character.currentHp > 0 ? 'green' : 'red'}
-                                px={2}
-                                py={1}
-                                borderRadius="md"
-                                fontSize="sm"
-                            >
-                                {character.currentHp > 0 ? 'Alive' : 'Dead'}
-                            </Badge>
-                            <Text>Job: {character.job}</Text>
-                            <Text>Health: {character.currentHp}/{character.health}</Text>
-                            <Text>Attack: {character.attack}</Text>
-                            <Text>Defense: {character.defense}</Text>
-                            <Text>Strength: {character.strength}</Text>
-                            <Text>Dexterity: {character.dexterity}</Text>
-                            <Text>Intelligence: {character.intelligence}</Text>
+                        <Stack spacing={4} pb={2}>
+                            <Flex align="center" justify="space-between" mb={2}>
+                                <HStack>
+                                    <Text fontSize="md" fontWeight="bold">Status:</Text>
+                                    <Badge colorScheme={character.currentHp > 0 ? 'green' : 'red'} px={2} py={1} borderRadius="md">
+                                        {character.currentHp > 0 ? 'ALIVE' : 'DEAD'}
+                                    </Badge>
+                                </HStack>
+                                <Text fontSize="md" fontWeight="bold">Job: {character.job}</Text>
+                            </Flex>
+                            <Box>
+                                <Text fontSize="md" fontWeight="bold" mb={2}>Stats:</Text>
+                                <SimpleGrid columns={2} spacingX={6} spacingY={2}>
+                                    <HStack><FaHeart color="#E53E3E" /><Text>HP: {character.currentHp} / {character.health}</Text></HStack>
+                                    <HStack><GiBrain color="#805AD5" /><Text>Intelligence: {character.intelligence}</Text></HStack>
+                                    <HStack><GiBroadsword color="#3182CE" /><Text>Attack: {character.attack}</Text></HStack>
+                                    <HStack><GiMuscleUp color="#ECC94B" /><Text>Strength: {character.strength}</Text></HStack>
+                                    <HStack><GiShield color="#718096" /><Text>Defense: {character.defense}</Text></HStack>
+                                    <HStack><GiRunningShoe color="#38A169" /><Text>Dexterity: {character.dexterity}</Text></HStack>
+                                </SimpleGrid>
+                            </Box>
                         </Stack>
                     </ModalBody>
                 </ModalContent>
