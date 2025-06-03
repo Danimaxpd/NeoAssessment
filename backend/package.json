@@ -1,5 +1,5 @@
 {
-  "name": "neo-assessment",
+  "name": "neo-assessment-backend",
   "version": "1.0.0",
   "description": "A RESTful API for managing characters in a role-playing game system. This backend service provides endpoints for character creation, management, and game mechanics, serving as a foundation for a new RPG game development.",
   "author": "David Jimenez",
