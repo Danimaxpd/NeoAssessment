@@ -92,6 +92,12 @@ describe('BattlesService', () => {
 
       expect(result.winner).toBe(character1);
       expect(result.loser).toBe(character2);
+
+      // Verify HP updates
+      const updatedCharacter1 = charactersService.findOne(character1.id);
+      const updatedCharacter2 = charactersService.findOne(character2.id);
+      expect(updatedCharacter1.currentHp).toBeGreaterThan(0);
+      expect(updatedCharacter2.currentHp).toBe(0);
     });
 
     it('should simulate a battle where character2 wins', () => {
@@ -112,6 +118,12 @@ describe('BattlesService', () => {
 
       expect(result.winner).toBe(character2);
       expect(result.loser).toBe(character1);
+
+      // Verify HP updates
+      const updatedCharacter1 = charactersService.findOne(character1.id);
+      const updatedCharacter2 = charactersService.findOne(character2.id);
+      expect(updatedCharacter1.currentHp).toBe(0);
+      expect(updatedCharacter2.currentHp).toBeGreaterThan(0);
     });
 
     it('should generate battle log with correct format', () => {

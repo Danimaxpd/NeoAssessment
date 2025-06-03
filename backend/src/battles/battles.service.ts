@@ -96,6 +96,16 @@ export class BattlesService {
       } HP remaining!`,
     );
 
+    // Update winner's HP in the database
+    this.charactersService.update(winner.id, {
+      currentHp: winner === character1 ? currentHealth1 : currentHealth2,
+    });
+
+    // Update loser's HP to 0 in the database
+    this.charactersService.update(loser.id, {
+      currentHp: 0,
+    });
+
     return {
       winner,
       loser,
